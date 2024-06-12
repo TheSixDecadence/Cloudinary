@@ -1,49 +1,43 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, ViewProps } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, ViewProps, ActivityIndicator } from "react-native";
+import demoService from '../services/demoService'
+import { User } from '../types/user.type'
 // import useAuth from "../hooks/useAuth";
 
 
 function LoginPage() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, isLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [data,  setData] = useState<User | undefined>(undefined);
 
+    useEffect(() => {
+        handleLoad()
+    }, [])
 
-    // const auth = useAuth();
+    useEffect(() => {
+        console.log({data})
 
-    const handleLogin = async () => {
+    }, [data])
 
-        isLoading(true);
-        // await auth.signIn(username, password);
+    const handleLoad = async () => {
+        setLoading(true)
+        const _data = await demoService()
+        setData(_data)
+        setLoading(false)
     };
 
+    if(loading || !data){
+        return (
+            <View style={styles.mainContainer}>
+                <ActivityIndicator/>
+            </View>
+        );
+    }
+    
 
     return (
         <View style={styles.mainContainer}>
             <View style={styles.loginContainer}>
-                <Text style={styles.loginTitle}>Welcome!</Text>
-                <View style={styles.loginInnerContainer}>
-                    <Text style={styles.loginText}>Username</Text>
-                    <TextInput
-                        style={styles.loginInput}
-                        onChangeText={setUsername}
-                        placeholder="Enter username"
-                        placeholderTextColor="#A9A9A9"
-                    />
-                </View>
-                <View style={styles.loginInnerContainer}>
-                    <Text style={styles.loginText}>Password</Text>
-                    <TextInput
-                        style={styles.loginInput}
-                        onChangeText={setPassword}
-                        secureTextEntry={true}
-                        placeholder="Enter password"
-                        placeholderTextColor="#A9A9A9"
-                    />
-                </View>
-                <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-                    <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity>
+                <Text style={styles.loginTitle}>{data?.address?.address}</Text>
             </View>
         </View>
     );

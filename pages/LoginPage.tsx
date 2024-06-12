@@ -16,6 +16,14 @@ function LoginPage() {
     };
 
 
+    if(loading){
+        return (
+            <View style={styles.mainContainer}>
+                <ActivityIndicator/>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.mainContainer}>
             <View style={styles.loginContainer}>
@@ -39,9 +47,9 @@ function LoginPage() {
                         placeholderTextColor="#A9A9A9"
                     />
                 </View>
-                {loading ? <ActivityIndicator /> : <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+               <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity> }
+                </TouchableOpacity> 
             </View>
         </View>
     );

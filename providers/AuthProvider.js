@@ -6,7 +6,7 @@ const AuthContext = createContext({})
 
 function AuthProvider({children}){
   const [user,setUser] = useState(undefined)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadStorageData()
@@ -17,8 +17,6 @@ function AuthProvider({children}){
       setLoading(true)
 
       const authDataSerialize = await AsyncStorage.getItem('@authData');
-
-      console.log({authDataSerialize})
 
       if(authDataSerialize){
         const _authData = JSON.parse(authDataSerialize)
