@@ -7,11 +7,10 @@ import useAuth from "../hooks/useAuth";
 function Router() {
   // const auth = false
   const demo = useAuth();
-  console.log(demo);
 
   return (
     <NavigationContainer>
-      {demo.user != null ? <AppStack /> : <AuthStack />}
+      {demo.user != undefined ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 }

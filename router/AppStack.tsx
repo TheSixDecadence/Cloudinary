@@ -1,11 +1,15 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
+import useAuth from "../hooks/useAuth";
 
 const Stack = createNativeStackNavigator();
 function AppStack() {
+  const { logout } = useAuth();
+
   return (
     <Stack.Navigator>
       <Stack.Screen
+        options={{headerRight: () => <Button title='log out' onPress={logout}/>}}
         name="Home"
         component={() => (
           <View>

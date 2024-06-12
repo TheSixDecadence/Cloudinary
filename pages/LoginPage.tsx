@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, ViewProps } from "react-native";
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, ViewProps, ActivityIndicator } from "react-native";
 import useAuth from "../hooks/useAuth";
 
 
@@ -7,15 +7,12 @@ import useAuth from "../hooks/useAuth";
 function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, isLoading] = useState(false);
 
 
-    const auth = useAuth();
+    const { login, loading } = useAuth();
 
     const handleLogin = async () => {
-
-        isLoading(true);
-        await auth.login(username, password);
+        await login(username, password);
     };
 
 
@@ -42,9 +39,9 @@ function LoginPage() {
                         placeholderTextColor="#A9A9A9"
                     />
                 </View>
-                <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+                {loading ? <ActivityIndicator /> : <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> }
             </View>
         </View>
     );
