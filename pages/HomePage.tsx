@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, ViewProps, ActivityIndicator } from "react-native";
 import demoService from '../services/demoService'
 import { User } from '../types/user.type'
+import CameraPage from "./CameraPage";
 // import useAuth from "../hooks/useAuth";
 
 
-function LoginPage() {
+function LoginPage({navigation}) {
     const [loading, setLoading] = useState(true);
     const [data,  setData] = useState<User | undefined>(undefined);
 
@@ -37,7 +38,10 @@ function LoginPage() {
     return (
         <View style={styles.mainContainer}>
             <View style={styles.loginContainer}>
-                <Text style={styles.loginTitle}>{data?.address?.address}</Text>
+                {/* <Text style={styles.loginTitle}>{data?.address?.address}</Text> */}
+                <TouchableOpacity onPress={() => {navigation.navigate("Camera")}}>
+                    <Text style={styles.loginText}>Camera</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
