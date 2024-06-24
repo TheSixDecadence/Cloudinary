@@ -1,16 +1,30 @@
-import { CameraView, useCameraPermissions } from "expo-camera";
+import {
+  CameraCapturedPicture,
+  CameraView,
+  useCameraPermissions,
+} from "expo-camera";
 import { useEffect, useRef, useState } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { UploadApiOptions, upload } from "cloudinary-react-native";
+import * as Crypto from "expo-crypto";
 
 export default function CameraPage() {
   const [facing, setFacing] = useState("back");
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const cameraRef = useRef(null as any);
+  const cameraRef = useRef<CameraView>(null);
   const [mediaPermission, requestMediaPermission] =
     MediaLibrary.usePermissions();
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<CameraCapturedPicture>();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -20,8 +34,6 @@ export default function CameraPage() {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -50,19 +62,66 @@ export default function CameraPage() {
     );
   }
 
+  async function uploadImageToCloudinarySDK(uri: String) {
+    const cld = new Cloudinary({
+      cloud: {
+        cloudName: "dpjwt3wc0",
+        apiKey: "924747896266865",
+        apiSecret: "JD8svlGklQSgx3Tw9DsqMJDrPIU",
+
+      },
+      url: {
+        secure: true,
+      },
+    });
+
+    const options: UploadApiOptions = {
+      upload_preset: "ml_default",
+      public_id: "wachumaralavaquita",
+    };
+
+    console.log(uri);
+
+    await upload(cld, {
+      file: uri,
+      options,
+      callback: (error: any, response: any) => {
+        console.log(response ?? error);
+      },
+    });
+  }
+
+  async function uploadImageToCloudinaryRaw(base64){
+    const base64Image = "data:image/jpeg;base64," + base64;
+    const formData = new FormData();
+    const public_id = Crypto.randomUUID();
+    formData.append("file", base64Image, "file");
+    formData.append("upload_preset", "<YOUR_UPLOAD_PRESET>");
+    formData.append("public_id", public_id);
+    const response = await fetch("https://api.cloudinary.com/v1_1/<YOUR_CLOUD_NAME>/image/upload", {
+      method: "POST",
+      body: formData,
+    }).then((res) => res.json())
+    .catch((err)=> err)
+    console.log(response);
+  }
+
+
   function toggleCameraFacing() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
-  function takePicture() {
+  async function takePicture() {
     if (!mediaPermission?.granted && mediaPermission?.canAskAgain) {
       requestMediaPermission();
     }
     if (cameraRef.current) {
       cameraRef.current
-        .takePictureAsync({ skipProcessing: true })
-        .then(async (picture: any) => {
+        .takePictureAsync({ skipProcessing: true, base64: true })
+        .then(async (picture) => {
           try {
-            await MediaLibrary.saveToLibraryAsync(picture.uri);
+            setImage(picture);
+            //await uploadImageToCloudinarySDK(picture?.uri);
+            uploadImageToCloudinaryRaw(picture?.base64)
           } catch (error) {
             alert("We couldn't take the picture");
           }
@@ -70,11 +129,31 @@ export default function CameraPage() {
     }
   }
 
+  if (image) {
+    return (
+      <View>
+        <Text style={{ textAlign: "center" }}>
+          We need your permission to show the camera
+        </Text>
+        <Button
+          onPress={() => {
+            setImage(null);
+          }}
+          title="Back"
+        />
+        <Image
+          source={{ uri: image.uri }}
+          style={{ width: 200, height: 200 }}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={pickImage}> 
+          <TouchableOpacity style={styles.button} onPress={pickImage}>
             <Text style={styles.text}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity
