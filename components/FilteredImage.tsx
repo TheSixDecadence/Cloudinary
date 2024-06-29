@@ -11,7 +11,7 @@ export default function FilteredImage() {
     // Create and configure your Cloudinary instance.
     const cld = new Cloudinary({
         cloud: {
-            cloudName: 'dpjwt3wc0'
+            cloudName: 'dlruakxxt'
         }
     });
 
