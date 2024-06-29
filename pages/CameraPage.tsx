@@ -96,7 +96,7 @@ export default function CameraPage() {
     const formData = new FormData();
     const public_id = Crypto.randomUUID();
     formData.append("file", base64Image, "file");
-    formData.append("upload_preset", "ml_default	");
+    formData.append("upload_preset", "ml_default");
     formData.append("public_id", public_id);
     const response = await fetch("https://api.cloudinary.com/v1_1/dlruakxxt/image/upload", {
       method: "POST",
